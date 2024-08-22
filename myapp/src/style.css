@@ -1,0 +1,43 @@
+.container {
+    text-align: center;
+    margin-top: 50px;
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .form-group select,
+  .form-group input,
+  .form-group textarea {
+    width: 300px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  textarea {
+    height: 100px;
+  }
+  
+  button {
+    padding: 10px;
+    width: 150px;
+  }
+  
+  .mood-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+  }
+  
+  .mood-list li {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+  }
+  
+  .chart-container {
+    max-width: 600px;
+    margin: 0 auto;
+    margin-top: 50px;
+  }
+  

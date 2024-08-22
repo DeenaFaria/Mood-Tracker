@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
-import './App.css';
-
+import './style.css';
 
 function App() {
   const [mood, setMood] = useState('');
   const [moodList, setMoodList] = useState([]);
   const [editingIndex, setEditingIndex] = useState(null);
+
+  const moodOptions = ['Happy', 'Sad', 'Angry', 'Anxious', 'Excited', 'Calm','Creative','Depressed', 'Sarcastic'];
 
   useEffect(() => {
     const storedMoods = JSON.parse(localStorage.getItem('moodList'));
@@ -24,19 +25,38 @@ function App() {
     setMood(e.target.value);
   };
 
-  const handleAddMood = () => {
-    if (mood !== '') {
-      if (editingIndex !== null) {
-        const updatedMoodList = [...moodList];
-        updatedMoodList[editingIndex] = { mood, date: new Date().toLocaleString() };
-        setMoodList(updatedMoodList);
-        setEditingIndex(null);
-      } else {
-        setMoodList([...moodList, { mood, date: new Date().toLocaleString() }]);
-      }
-      setMood('');
+  const [moodIntensity, setMoodIntensity] = useState(5);
+
+const handleIntensityChange = (e) => {
+  setMoodIntensity(e.target.value);
+};
+
+const [moodNote, setMoodNote] = useState('');
+
+const handleNoteChange = (e) => {
+  setMoodNote(e.target.value);
+};
+
+
+
+const handleAddMood = () => {
+  if (mood !== '') {
+    const newMood = { mood, intensity: moodIntensity, note: moodNote, date: new Date().toLocaleString() };
+    if (editingIndex !== null) {
+      const updatedMoodList = [...moodList];
+      updatedMoodList[editingIndex] = newMood;
+      setMoodList(updatedMoodList);
+      setEditingIndex(null);
+    } else {
+      setMoodList([...moodList, newMood]);
     }
-  };
+    setMood('');
+    setMoodIntensity(5);
+    setMoodNote(''); // Reset note
+  }
+};
+
+
 
   const handleEditMood = (index) => {
     setMood(moodList[index].mood);
@@ -65,22 +85,49 @@ function App() {
   };
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>Deena's Personal Mood Tracker</h1>
-      <input
-        type="text"
-        value={mood}
-        onChange={handleMoodChange}
-        placeholder="How are you feeling today?"
-        style={{ padding: '10px', width: '300px' }}
-      />
-      <button onClick={handleAddMood} style={{ marginLeft: '10px', padding: '10px' }}>
-        {editingIndex !== null ? 'Update Mood' : 'Add Mood'}
-      </button>
-      <ul style={{ listStyle: 'none', padding: 0, marginTop: '20px' }}>
+    <div className="container">
+      <h1>Mood Tracker</h1>
+
+      <div className="form-group">
+        <select value={mood} onChange={handleMoodChange}>
+          <option value="">Select your mood</option>
+          {moodOptions.map((option, index) => (
+            <option key={index} value={option}>{option}</option>
+          ))}
+        </select>
+      </div>
+
+      <div className="form-group">
+        <input
+          type="range"
+          min="1"
+          max="10"
+          value={moodIntensity}
+          onChange={handleIntensityChange}
+        />
+        <span>Intensity: {moodIntensity}</span>
+      </div>
+
+      <div className="form-group">
+        <textarea
+          value={moodNote}
+          onChange={handleNoteChange}
+          placeholder="Add a note (optional)"
+        />
+      </div>
+
+      <div className="form-group">
+        <button onClick={handleAddMood}>
+          {editingIndex !== null ? 'Update Mood' : 'Add Mood'}
+        </button>
+      </div>
+
+      <ul className="mood-list">
         {moodList.map((entry, index) => (
-          <li key={index} style={{ padding: '10px', borderBottom: '1px solid #ccc' }}>
+          <li key={index}>
             <strong>{entry.mood}</strong> <em>on {entry.date}</em>
+            <p><strong>Intensity:</strong> {entry.intensity}</p>
+            {entry.note && <p><strong>Note:</strong> {entry.note}</p>}
             <button onClick={() => handleEditMood(index)} style={{ marginLeft: '10px' }}>
               Edit
             </button>
@@ -90,7 +137,8 @@ function App() {
           </li>
         ))}
       </ul>
-      <div style={{ maxWidth: '600px', margin: '0 auto', marginTop: '50px' }}>
+
+      <div className="chart-container">
         <Line data={chartData} />
       </div>
     </div>
